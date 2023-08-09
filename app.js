@@ -24,15 +24,20 @@ async function scrapeData() {
 
       let content = [];
 
+      // Looks for html tags and loops over to scrape
       $("a.m.live.meven").each(function () {
+        const competition = $(this).closest("redis").find("a").text().trim();
         const matchTime = $(this).find("st").text().trim();
         const homeTeam = $(this).find("t1").eq(0).text().trim();
-        const awayTeam = $(this).find("t2").eq(1).text().trim();
+        const awayTeam = $(this).find("t").eq(1).text().trim();
+        const matchScore = $(this).find("sc").text().trim();
   
         content.push({
+          competition: competition,
           matchTime: matchTime,
           homeTeam: homeTeam,
           awayTeam: awayTeam,
+          matchScore: matchScore,
         });
       });
 
