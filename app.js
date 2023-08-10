@@ -26,7 +26,7 @@ async function scrapeData() {
       let currentCompetition = null;
 
       // Looks for html tags and loops over to scrape
-      $("a.m.live.meven,a.m.meven, m.ft.meven, a.m.modd,1").each(function () {
+      $("a.m.live.meven,a.m.meven, m.ft.meven, a.m.modd, h2.l a:last-child").each(function () {
         const matchTime = $(this).find("st").text().trim();
         const homeTeam = $(this).find("t1").eq(0).text().trim();
         const awayTeam = $(this).find("t").eq(1).text().trim();
@@ -50,15 +50,6 @@ async function scrapeData() {
         });
       });
 
-      //Getting competition data
-     /*  $("h2.l a:last-child").each(function () { 
-        const competition = $(this).text().trim();
-      
-        content.push({
-          competition: competition,
-        });
-      }); */
-
     console.log(content)
     console.log("Scraping process completed.")
 
@@ -68,7 +59,7 @@ async function scrapeData() {
   }
 }
 
-// node router
+// node router, to be moved later
 app.get("/", async (req, res) => {
   try {
     const scrapedData = await scrapeData();
@@ -81,6 +72,7 @@ app.get("/", async (req, res) => {
 
 scrapeData();
 
+// Node server, to be moved later
 app.listen(PORT, () => {
   console.log(`server is running on PORT:${PORT}`);
 });
