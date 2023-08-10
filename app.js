@@ -23,23 +23,41 @@ async function scrapeData() {
       const $ = cheerio.load(data);
 
       let content = [];
+      let currentCompetition = null;
 
       // Looks for html tags and loops over to scrape
-      $("a.m.live.meven").each(function () {
-        const competition = $(this).closest("redis").find("a").text().trim();
+      $("a.m.live.meven,a.m.meven, m.ft.meven, a.m.modd,1").each(function () {
         const matchTime = $(this).find("st").text().trim();
         const homeTeam = $(this).find("t1").eq(0).text().trim();
         const awayTeam = $(this).find("t").eq(1).text().trim();
         const matchScore = $(this).find("sc").text().trim();
-  
+        const startTime = $(this).find("a").find("sa").text().trim();       
+        
+        $("h2.l a:last-child").each(function () { 
+          const competition = $(this).text().trim();
+        
+          content.push({
+            competition: competition,
+          });
+        });
+        
         content.push({
-          competition: competition,
           matchTime: matchTime,
+          startTime: startTime,
           homeTeam: homeTeam,
           awayTeam: awayTeam,
           matchScore: matchScore,
         });
       });
+
+      //Getting competition data
+     /*  $("h2.l a:last-child").each(function () { 
+        const competition = $(this).text().trim();
+      
+        content.push({
+          competition: competition,
+        });
+      }); */
 
     console.log(content)
     console.log("Scraping process completed.")
@@ -55,8 +73,6 @@ app.get("/", async (req, res) => {
   try {
     const scrapedData = await scrapeData();
 
-    console.log(scrapedData)
-
     res.json(scrapeData);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching data." });
@@ -64,7 +80,6 @@ app.get("/", async (req, res) => {
 });
 
 scrapeData();
-
 
 app.listen(PORT, () => {
   console.log(`server is running on PORT:${PORT}`);
