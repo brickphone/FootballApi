@@ -6,7 +6,7 @@ const app = express()
 
 const PORT = process.env.port || 3000;
 
-const website = "https://www.livescore.bz/"
+const website = "https://www.livescore.com/en/"
 
 console.log("Before scraping process")
 
@@ -26,20 +26,20 @@ async function scrapeData() {
       let currentCompetition = null;
 
       // Looks for html tags and loops over to scrape
-      $("a.m.live.meven,a.m.meven, m.ft.meven, a.m.modd, h2.l a:last-child").each(function () {
+      $("np rp qp").each(function () {
         const matchTime = $(this).find("st").text().trim();
         const homeTeam = $(this).find("t1").eq(0).text().trim();
         const awayTeam = $(this).find("t").eq(1).text().trim();
         const matchScore = $(this).find("sc").text().trim();
         const startTime = $(this).find("a").find("sa").text().trim();       
         
-        $("h2.l a:last-child").each(function () { 
+       /*  $("h2.l a:last-child").each(function () { 
           const competition = $(this).text().trim();
         
           content.push({
             competition: competition,
           });
-        });
+        }); */
         
         content.push({
           matchTime: matchTime,
