@@ -30,6 +30,7 @@ async function scrapeData(page) {
     if (homeTeamElement) {
       const homeTeamText = await homeTeamElement.evaluate(node => node.textContent);
       content.push(homeTeamText);
+      console.log(content)
     }
   };
 
