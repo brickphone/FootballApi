@@ -18,15 +18,20 @@ async function scrapeData(page) {
   const elements = await page.$$(".Ip")
   console.log("trying to select team element")
 
-  for (let i=0; i < elements.length; i++) {
+
+   for (let i=0; i < elements.length; i++) {
     let homeTeamElement = await elements[i].$(".vp")
     let awayTeamElement = await elements[i].$(".wp")
-    console.log("Looping through hometeam")
+    console.log("Looping through teams")
     
     if (homeTeamElement) {
+      console.log("looping through hometeam")
       const homeTeamText = await homeTeamElement.evaluate(node => node.textContent);
-        content.push(homeTeamText);
+        content.push({
+          homeTeam:homeTeamText,
+        });
     } else if (awayTeamElement) {
+      console.log("looping through awayteam")
       const awayTeamText = await awayTeamElement.evaluate(node => node.textContent);
         content.push(awayTeamText)
     };
