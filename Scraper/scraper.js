@@ -6,14 +6,7 @@ async function openPage() {
   
   await page.setViewport({ width: 1000, height: 926 });
   await page.goto("https://www.livescore.com/en/");
-
-  // accepting cookies 
-  const button = await page.waitForSelector('#onetrust-accept-btn-handler');
-  if (button) {
-    await button.click();
-    console.log("clicked cookie button");
-  };
-  
+ 
   return page;
 }
 
@@ -21,18 +14,24 @@ async function scrapeData(page) {
   let content = [];
 
   // Getting match elements
-  let elements = await page.waitForSelector(".Ip")
+  await page.waitForSelector(".Ip")
+  const elements = await page.$$(".Ip")
   console.log("trying to select team element")
 
-
   for (let i=0; i < elements.length; i++) {
-    let homeTeamElement = await elements[i].$(".Ip")
+    let homeTeamElement = await elements[i].$(".vp")
+    let awayTeamElement = await elements[i].$(".wp")
+    console.log("Looping through hometeam")
+    
     if (homeTeamElement) {
       const homeTeamText = await homeTeamElement.evaluate(node => node.textContent);
-      content.push(homeTeamText);
-      console.log(content)
-    }
+        content.push(homeTeamText);
+    } else if (awayTeamElement) {
+      const awayTeamText = await awayTeamElement.evaluate(node => node.textContent);
+        content.push(awayTeamText)
+    };
   };
+
 
   // Get competition information then change place
 
@@ -42,7 +41,7 @@ async function scrapeData(page) {
 (async () => {
   const page = await openPage();
   const dataScraped = await scrapeData(page);
-  console.log(dataScraped)
+  console.log(dataScraped) 
 
   await page.browser().close();
 })();
