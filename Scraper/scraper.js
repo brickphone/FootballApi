@@ -13,35 +13,66 @@ async function openPage() {
 async function scrapeData(page) {
   let content = [];
 
+  // Get competition data
+  await page.waitForSelector(".Gd");
+  const compElement = await page.$$(".Gd");
+  console.log("trying to get comp elements");
+  
+  // Loop through competition elements
+  for (let i=0; i < compElement.length; i++) {
+    let typeCompElement = await compElement[i].$(".Hd");
+    
+    if (typeCompElement) {
+      console.log("looping through type of comp");
+      const typeCompText = await typeCompElement.evaluate(node => node.textContent);
+        content.push({
+          competitionName: typeCompText,
+        });
+    }; 
+  };
+ 
   // Getting match elements
   await page.waitForSelector(".Ip")
-  const elements = await page.$$(".Ip")
+  const matchElements = await page.$$(".Ip")
   console.log("trying to select team element")
 
 
-   for (let i=0; i < elements.length; i++) {
-    let homeTeamElement = await elements[i].$(".vp")
-    let awayTeamElement = await elements[i].$(".wp")
+   for (let i=0; i < matchElements.length; i++) {
+    let homeTeamElement = await matchElements[i].$(".vp")
+    let awayTeamElement = await matchElements[i].$(".wp")
+    let homeScoreElement = await matchElements[i].$(".Cp")
+    let awayScoreElement = await matchElements[i].$(".Dp")
+
     
-    if (homeTeamElement) {
-      console.log("looping through hometeam")
+    if (homeTeamElement && awayTeamElement && homeScoreElement && awayScoreElement) {
+      console.log("looping through match");
       const homeTeamText = await homeTeamElement.evaluate(node => node.textContent);
-        content.push({
-          homeTeam:homeTeamText,
-        });
-    } if (awayTeamElement) {
-      console.log("looping through awayteam")
-      const awayTeamText = await awayTeamElement.evaluate(node => node.textContent);
+      const awayTeamText = await awayTeamElement.evaluate(node =>node.textContent);
+      const homeScoreText = await homeScoreElement.evaluate(node => node.textContent);
+      const awayScoreText = await awayTeamElement.evaluate(node => node.textContent);
+
+        
       content.push({
-        awayTeam:awayTeamText,
-      })
+          homeTeam:homeTeamText,
+          awayTeam:awayTeamText,
+          HomeScore:homeScoreText,
+          awayScore:awayScoreText,
+        });
     };
   };
 
-
-  // Get competition information then change place
-
   return content;
+};
+
+const formatOuput = (content) => {
+  let output = "";
+  let compMap = new Map();
+
+  for (let match of content) {
+    let compName = match.competition;
+    let matchString = `$(match.homeTeam) vs $(match.awayTeam)`;
+    
+  }
 };
 
 (async () => {
