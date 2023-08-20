@@ -42,20 +42,21 @@ async function scrapeData(page) {
     let awayTeamElement = await matchElements[i].$(".wp")
     let homeScoreElement = await matchElements[i].$(".Cp")
     let awayScoreElement = await matchElements[i].$(".Dp")
-
+    let matchTime = await matchElements[i].$(".qs", ".vs")
     
     if (homeTeamElement && awayTeamElement && homeScoreElement && awayScoreElement) {
       console.log("looping through match");
       const homeTeamText = await homeTeamElement.evaluate(node => node.textContent);
       const awayTeamText = await awayTeamElement.evaluate(node =>node.textContent);
       const homeScoreText = await homeScoreElement.evaluate(node => node.textContent);
-      const awayScoreText = await awayTeamElement.evaluate(node => node.textContent);
-
+      const awayScoreText = await awayScoreElement.evaluate(node => node.textContent);
+      const matchTimeText = await matchTime.evaluate(node => node.textContent);
         
       content.push({
+          matchTime:matchTimeText,
           homeTeam:homeTeamText,
           awayTeam:awayTeamText,
-          HomeScore:homeScoreText,
+          homeScore:homeScoreText,
           awayScore:awayScoreText,
         });
     };
@@ -71,7 +72,7 @@ const formatOuput = (content) => {
   for (let match of content) {
     let compName = match.competition;
     let matchString = `$(match.homeTeam) vs $(match.awayTeam)`;
-    
+
   }
 };
 
