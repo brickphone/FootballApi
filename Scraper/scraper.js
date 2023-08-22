@@ -1,63 +1,41 @@
 const puppeteer = require("puppeteer");
+const fs = require("fs");
+const { scrollPageToBottom } = require("puppeteer-autoscroll-down");
 
-async function openPage() {
-  const browser = await puppeteer.launch({ headless: true });
+const url = "https://www.livescore.com/en/";
+
+let browser;
+
+async function openPage () {
+  browser = await puppeteer.launch();
   const page = await browser.newPage();
-
-  await page.setViewport({ width: 1000, height: 926 });
-  await page.goto("https://www.livescore.com/en/");
+  await page.goto(url, {waitUntil: "domcontentloaded"});
 
   return page;
-}
+};
 
 async function scrapeData(page) {
-  let content = [];
+  await page.waitForSelector(".Ip");
 
-  // Get competition data
-  await page.waitForSelector(".Gd");
-  const compElements = await page.$$(".Gd");
+  const data = await page.$$eval(".Ip", els => els.map(e=> {
+    const text = (id, container = e) => 
+    container.querySelector(`[id*=${id}]`).textContent.trim();
 
-  // Loop through competition elements
-  for (let i = 0; i < compElements.length; i++) {
-    let compName = await compElements[i].$(".Hd");
-    console.log("looping trough comp elements")
+    const league = e.closest("[data-known-size]");
+    return {
+      competition: text("category-header__stage", league),
+      country: text("category-header__category", league),
+      time: text("status-or-time"),
+      home: text("home-team-name"),
+      away: text("away-team-name"),
+      homeTeamScore: +text("home-team-score"),
+      awayTeamScore: +text("away-team-score"),
+    }
+  }));
+  
+  return data;
+}
 
-    if (compName) {
-      const typeCompText = await compName.evaluate(node => node.textContent);
-      const currentComp = typeCompText; // Assign the competition here
-      
-      let matchElements = await page.$$(".Ip");
-
-      // Looping through match elements
-      for (let j = 0; j < matchElements.length; j++) {
-        let homeTeamElement = await matchElements[j].$(".vp");
-        let awayTeamElement = await matchElements[j].$(".wp");
-        let homeScoreElement = await matchElements[j].$(".Cp");
-        let awayScoreElement = await matchElements[j].$(".Dp");
-        let matchTime = await matchElements[j].$(".qs", ".vs");
-
-        if (homeTeamElement && awayTeamElement && homeScoreElement && awayScoreElement) {
-          const homeTeamText = await homeTeamElement.evaluate(node => node.textContent);
-          const awayTeamText = await awayTeamElement.evaluate(node => node.textContent);
-          const homeScoreText = await homeScoreElement.evaluate(node => node.textContent);
-          const awayScoreText = await awayScoreElement.evaluate(node => node.textContent);
-          const matchTimeText = await matchTime.evaluate(node => node.textContent);
-
-          content.push({
-            matchTime: matchTimeText,
-            homeTeam: homeTeamText,
-            awayTeam: awayTeamText,
-            homeScore: homeScoreText,
-            awayScore: awayScoreText,
-            competition: currentComp,
-          });
-        };
-      };
-    };
-  };
-
-  return content;
-};
 
 (async () => {
   const page = await openPage();
@@ -66,3 +44,5 @@ async function scrapeData(page) {
 
   await page.browser().close();
 })();
+
+module.exports = scrapeData();
