@@ -15,9 +15,9 @@ async function openPage () {
 };
 
 async function scrapeData(page) {
-  await page.waitForSelector(".Ip");
+  await page.waitForSelector(".Fp");
 
-  const data = await page.$$eval(".Ip", els => els.map(e=> {
+  const data = await page.$$eval(".Fp", els => els.map(e=> {
     const text = (id, container = e) => 
     container.querySelector(`[id*=${id}]`).textContent.trim();
 
@@ -45,4 +45,4 @@ async function scrapeData(page) {
   await page.browser().close();
 })();
 
-module.exports = scrapeData();
+module.exports = { openPage, scrapeData };
