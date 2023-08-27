@@ -1,39 +1,37 @@
-require('dotenv').config();
-
 const express = require("express");
-const scrapeData = require("./Scraper/scraper");
+const getData = require("./Scraper/altscraper");
 const routes = require("./routes/routes");
-
-const mongoString = p<rocess.env.DATABASE_URL
-mongoose.connect(mongoString);
-const database = mongoose.connection
-
-database.on("error", (error) => {
-  console.log(error);
-});
-
-database.once('connected', () => {
-  console.log('Database connected');
-});
-
-
+const mongoose = require("./db");
+const Model = require("./models/match");
 const app = express();
+
+// Middleware
 app.use(express.json());
 
-const port = process.env.PORT || 3000;
-
-app.get("/api/data", async(req, res) => {
+app.use("/status", (req, res) => {
   try {
-    const page = await openPage();
-    const dataScraped = await scrapeData();
-      res.json(scrapeData);
-      await page.browser().close();
-      console.log("data has been fetched");
+    res.sendStatus(200);
   } catch (error) {
-      res.status(500).json({ error: "An error occurred while fetching data." });
-  }
-});
+    res.sendStatus(500);
+  };
+}); 
 
+
+app.post("/data", async(req, res) => {
+  try {
+    console.log("Trying to get data");
+    const scrapedData = await getData();
+    const savedMatches = await Match.insertMany(scrapedData);
+    console.log("Saving data to db");
+    console.log(savedMatches);
+    
+    return res.json(savedMatches);
+  } catch (error) {
+    res.status(500).json({error: "An error occured while fetching data."});
+  };
+}); 
+
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });
