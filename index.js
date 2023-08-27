@@ -1,10 +1,31 @@
+require('dotenv').config();
+
 const express = require("express");
 const scrapeData = require("./Scraper/scraper");
+const mongoose = require("mongoose");
+const routes = require("./routes/routes");
+
+const mongoString = process.env.DATABASE_URL
+mongoose.connect(mongoString);
+const database = mongoose.connection
+
+database.on("error", (error) => {
+  console.log(error);
+});
+
+database.once('connected', () => {
+  console.log('Database connected');
+});
+
 
 const app = express();
+app.use(express.json());
+
 const port = process.env.PORT || 3000;
 
-app.get("/api/data", async(req, res) => {
+app.use('/api', routes);
+
+router.get("/api/data", async(req, res) => {
   try {
     const page = await openPage();
     const dataScraped = await scrapeData();
