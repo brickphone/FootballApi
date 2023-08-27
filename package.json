@@ -2,9 +2,14 @@
   "dependencies": {
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
+<<<<<<< HEAD
     "mongodb": "^5.8.1",
     "mongoose": "^7.4.4",
+=======
+    "mongoose": "^7.4.5",
+>>>>>>> 44b4076241d843d3e6cb8f9d68eb6842153f98ee
     "puppeteer": "^21.0.3"
   },
   "name": "footballapi",
