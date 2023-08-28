@@ -16,20 +16,16 @@ app.use("/status", (req, res) => {
   };
 }); 
 
+app.get("/", (req, res) => {
+  return res.send("Recieved get method");
+});
 
-app.post("/data", async(req, res) => {
-  try {
-    console.log("Trying to get data");
-    const scrapedData = await getData();
-    const savedMatches = await Match.insertMany(scrapedData);
-    console.log("Saving data to db");
-    console.log(savedMatches);
-    
-    return res.json(savedMatches);
-  } catch (error) {
-    res.status(500).json({error: "An error occured while fetching data."});
-  };
-}); 
+app.get("/data", async(req, res) => {
+  console.log("Get data");
+  const scrapedData = await getData();
+  console.log(scrapedData);
+  return res.json(scrapedData);
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
