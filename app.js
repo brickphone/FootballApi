@@ -27,6 +27,11 @@ app.get("/data", async(req, res) => {
   return res.json(scrapedData);
 });
 
+app.post("/", async(req, res) => {
+  const databaseData = await scrapedData;
+  Model.db.collection.insertMany(databaseData);
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
